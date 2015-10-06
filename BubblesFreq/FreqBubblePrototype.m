@@ -2,24 +2,24 @@
 clear
 clc
 %how many Bubbles per frequency
-howMany=20;
+howMany=100;
 %power of bandwidth distribution
 pow=12;
 %bubble size
 sd=12;
 %Bild in den speicher Laden
-p=imread('cat.jpg');
+p=imread('sloth.jpg');
 %Schwarz-Weiﬂ konvertieren
 r=rgb2gray(p);
 %r=p;
-[x,y,z]=size(r);
+[y,x,z]=size(r);
 %% Transform to spectral
 r_fft=fft2(r);
 
 %% Bandwidths
 % defining the individual bandwidths. Most information is found in the
 % lowest 10% so we use power functions
-maxrd= sqrt(((x/2)^2)+((y/2)^2));
+maxrd= ceil(sqrt(((x/2)^2)+((y/2)^2)));
 nBands= 5;
 bandDist=[];
 for i=1:nBands
@@ -31,7 +31,7 @@ end
 [xmat, ymat]= meshgrid(1:x, 1:y);
 radiusIn=[0,bandDist(1),bandDist(2),bandDist(3),bandDist(4)];
 radiusOut=[bandDist(1),bandDist(2),bandDist(3),bandDist(4), bandDist(5)];
-center= [(x/2) (y/2)];
+center= [ceil(x/2) ceil(y/2)];
 dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
 ringList={};
 for i=1:length(radiusIn)

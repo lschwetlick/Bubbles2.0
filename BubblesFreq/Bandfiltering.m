@@ -1,6 +1,6 @@
 clear
 clc
-p=imread('cat.jpg');
+p=imread('sloth.jpg');
 % r= p(:,:,1);
 % g= p(:,:,2);
 % b= p(:,:,3);
@@ -9,24 +9,45 @@ r=rgb2gray(p);
 r_fft=fft2(r);
 %r_fft=fftshift(r_fft);
 
-[x,y,z]=size(r);
+[y,x,z]=size(r);
 %Vorsicht mit ungradzahligen pixelanzahlen
-maxrd= sqrt(((x/2)^2)+((y/2)^2));
+maxrd= ceil(sqrt(((x/2)^2)+((y/2)^2)));
 nBands= 5;
+pow=12;
 bandDist=[];
 for i=1:nBands
-    b= nthroot(((i)/(5/maxrd^7)),7);
+    b= nthroot(((i)/(5/maxrd^pow)),pow);
     bandDist(i)=ceil(b);
-
 end
+%
+% nBands= 5;
+% base= 1.05;
+% bandDist=[];
+% multiplier= (nBands/base^maxrd);
+% for i=1:nBands
+%     b= (log2(i/multiplier))/(log2(base));
+%     bandDist(i)=ceil(b);
+% 
+% end
 
-
+%Logarithmisch
+% adder=5;
+% px=300;
+% nBands=0;
+% multiplier=(nBands-adder)/log2(px);
+% plot(adder+multiplier*log2(maxrd));
+% 
+% bandDist=[];
+% for i=1:5
+%     b= 2^((i-adder)/multiplier);
+%     bandDist(i)=ceil(b);
+% end
 
 %ringfilter
 [xmat, ymat]= meshgrid(1:x, 1:y);
 radiusIn=[0,bandDist(1),bandDist(2),bandDist(3),bandDist(4)];
 radiusOut=[bandDist(1),bandDist(2),bandDist(3),bandDist(4), bandDist(5)];
-center= [150 150];
+center= [ceil(x/2) ceil(y/2)];
 dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
 ringList={};
 for i=1:length(radiusIn)
@@ -76,8 +97,8 @@ subplot(1,6,4), imshow(uint8(real(r_new4norm))), title('Band4')
 subplot(1,6,5), imshow(uint8(real(r_new5norm))), title('Band5')
 subplot(1,6,6), imshow(r), title('Original')
 % 
-% figure(2)
-% imshow(uint8(real(BlaZeitnorm)))
-% 
-% figure(3)
-% imshow(uint8(real(r_newblanorm)))
+figure(2)
+imshow(uint8(real(BlaZeitnorm)))
+
+figure(3)
+imshow(uint8(real(r_newblanorm)))
