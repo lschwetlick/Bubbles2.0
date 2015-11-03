@@ -1,11 +1,17 @@
 clear
 clc
-c=[0:300];
-plot((5/2^300)*(1.09.^c));
-hold on;
-plot((c.^12)*(5/300^12));
+hold off
+yy=300;
+c=[0:yy];
+bands=5;
 
-hold off;
+% power changing the exponent
+plot((bands/2^yy)*(1.09.^c));
+hold on
+%%power changing the base
+plot((c.^12)*(bands/yy^12));
+hold on
+%plot(-log2(c)+5)
 %generic Log version
 % multiplier=0.25;
 % adder=0;

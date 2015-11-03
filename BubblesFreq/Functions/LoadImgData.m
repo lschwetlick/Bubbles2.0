@@ -15,7 +15,7 @@ for i=1:numel(dirName) %over all folders
             n=1;
         end %if
         %transform to black and white
-        data(n).image = rgb2gray(imread(fname)); % load file
+        data(n).image = (imread(fname)); % load file
         data(n).name = fname; %store file name
                 
         %store type           
