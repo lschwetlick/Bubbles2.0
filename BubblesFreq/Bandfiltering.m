@@ -17,13 +17,13 @@ r_fft=fftshift(r_fft);
 maxrd= ceil(sqrt(((x/2)^2)+((y/2)^2)));
 %% Power Function
 % 
-nBands= 5;
-pow=12;
-bandDist=[];
-for i=1:nBands
-    b= nthroot(((i)/(5/maxrd^pow)),pow);
-    bandDist(i)=ceil(b);
-end
+% nBands= 5;
+% pow=12;
+% bandDist=[];
+% for i=1:nBands
+%     b= nthroot(((i)/(5/maxrd^pow)),pow);
+%     bandDist(i)=ceil(b);
+% end
 %% log
 % nBands= 5;
 % base= 1.05;
@@ -69,7 +69,7 @@ for i=1:length(radiusIn)
     ring=ring==0;
     ringList{i}=ring;
 end
-ringList{1}(150, 150)=1;
+ringList{1}(151,151)=1;
 ringAdd=ringList{1}+ringList{2}+ringList{3}+ringList{4}+ringList{5};
 
 

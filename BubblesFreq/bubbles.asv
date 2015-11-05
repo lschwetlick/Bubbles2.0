@@ -7,7 +7,7 @@ classdef bubbles
         maskSizeX=300
         maskSizeY=300
         maskList={}
-        sd=[50,30,20,10]
+        sd=0.09
         amount=[] %amount of bubbles to be plotted
         bandMask={}
         nBands=5
@@ -18,13 +18,13 @@ classdef bubbles
 
     methods
 
-        function obj=bubbles(pic)
+        function obj=bubbles(pic, sd)
             %constructor
             %obj.pic=rgb2gray(pic);
             obj.pic=pic;
             [obj.maskSizeY,obj.maskSizeX,unused] = size(pic);
             obj.amount=[1,2,7,15];
-%             obj.sd=sd;
+            obj.sd=sd;
             %Place the spots in random locations
             obj=obj.setlocations();
             obj=obj.filtermaker();
@@ -35,10 +35,10 @@ classdef bubbles
         function [obj]=setlocations(obj)
             for j=1:(obj.nBands-1)
                 
-                xLocations=zeros(1,sum(obj.amount));
-                yLocations=zeros(1,sum(obj.amount));
+                xLocations=zeros(1,obj.amount);
+                yLocations=zeros(1,obj.amount);
 
-                for i=1:numel(xLocations)
+                for i=1:obj.amount
                     xLocations(i)=randi(obj.maskSizeX);
                     yLocations(i)=randi(obj.maskSizeY);
                 end
@@ -55,33 +55,32 @@ classdef bubbles
             [X1,X2] = meshgrid(1:obj.maskSizeX,1:obj.maskSizeY);            
             for j=1:(obj.nBands-1)
                 %different parameters for the different bands
-%                 if j==1 %coarsest/lowest band with fewest and largest bubbles
-%                     %nBubbles=obj.amount[j];
-%                     m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
-%                     %obj.sd(j)=ceil((obj.maskSizeX/m)*3);
-%                     
-%                 elseif j==2
-%                     %amount =5;
-%                     m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
-%                     obj.sd(j)=ceil((obj.maskSizeX/m)*3);
-%                 elseif j==3
-%                     %amount =10;
-%                     m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
-%                     obj.sd(j)=ceil((obj.maskSizeX/m)*3);
-%                 else % finest band with most and smallest bubbles
-%                     %amount=20;
-%                     m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
-%                     obj.sd(j)=ceil((obj.maskSizeX/m)*3);
-%                 end
+                if j==1 %coarsest/lowest band with fewest and largest bubbles
+                    nBubbles=obj.amount[j];
+                    m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
+                    sd=ceil((obj.maskSizeX/m)*3)
+                elseif j==2
+                    amount =5;
+                    m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
+                    sd=ceil((obj.maskSizeX/m)*3)
+                elseif j==3
+                    amount =10;
+                    m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
+                    sd=ceil((obj.maskSizeX/m)*3)
+                else % finest band with most and smallest bubbles
+                    amount=20;
+                    m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
+                    sd=ceil((obj.maskSizeX/m)*3)
+                end
                 %make mask with parameters set above
                 mask = zeros(obj.maskSizeY,obj.maskSizeX);
-                for i = 1:obj.amount(j)
+                for i = 1:obj.amount[j]
 %                     mu=[obj.bandMask{1,j}(i), obj.bandMask{2,j}(i)];
 %                     F = (1./sqrt(2.*pi.*obj.sd)).*exp( -((((X1-mu(1)).^2)+((X2-mu(2)).^2)) ./ (obj.sd.^2)));
 %                     F=F./max(max(F));
 %                     mask=mask+F;
                     mu=[obj.bandMask{1,j}(i), obj.bandMask{2,j}(i)];
-                    F = (1./sqrt(2.*pi.*obj.sd(j))).*exp( -((((X1-mu(1)).^2)+((X2-mu(2)).^2)) ./ (obj.sd(j).^2)));
+                    F = (1./sqrt(2.*pi.*sd)).*exp( -((((X1-mu(1)).^2)+((X2-mu(2)).^2)) ./ (sd.^2)));
                     F=F./max(max(F));
                     mask=mask+F;
                 end
@@ -94,11 +93,16 @@ classdef bubbles
         %
         function [obj] = filtermaker(obj)
             maxrd= ceil(sqrt(((obj.maskSizeX/2)^2)+((obj.maskSizeY/2)^2)));
-            obj.radiusIn=[0,(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2)];
-            obj.radiusOut=[(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2), maxrd];
-                        
+            bandDist=[];
+            pow=12;
+            for i=1:obj.nBands
+                b= nthroot(((i)/(5/maxrd^pow)),pow);
+                bandDist(i)=ceil(b);
+            end
             % Ring Filters
             [xmat, ymat]= meshgrid(1:obj.maskSizeX, 1:obj.maskSizeY);
+            obj.radiusIn=[0,bandDist(1),bandDist(2),bandDist(3),bandDist(4)];
+            obj.radiusOut=[bandDist(1),bandDist(2),bandDist(3),bandDist(4), bandDist(5)];
             center= [ceil(obj.maskSizeX/2) ceil(obj.maskSizeY/2)];
             dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
             
