@@ -7,7 +7,7 @@ classdef bubbles
         maskSizeX=300
         maskSizeY=300
         maskList={}
-        sd=[50,30,20,10]
+        sd=[200,100,50,25]
         amount=[] %amount of bubbles to be plotted
         bandMask={}
         nBands=5
@@ -23,7 +23,7 @@ classdef bubbles
             %obj.pic=rgb2gray(pic);
             obj.pic=pic;
             [obj.maskSizeY,obj.maskSizeX,unused] = size(pic);
-            obj.amount=[1,2,7,15];
+            obj.amount=[1,3,10,20];
 %             obj.sd=sd;
             %Place the spots in random locations
             obj=obj.setlocations();
@@ -94,12 +94,25 @@ classdef bubbles
         %
         function [obj] = filtermaker(obj)
             maxrd= ceil(sqrt(((obj.maskSizeX/2)^2)+((obj.maskSizeY/2)^2)));
-            obj.radiusIn=[0,(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2)];
-            obj.radiusOut=[(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2), maxrd];
-                        
+            %powerfuction
+%           pow=12;
+%           bandDist=[];
+%           for i=1:obj.nBands
+%               b= nthroot(((i)/(5/maxrd^pow)),pow);
+%               bandDist(i)=maxrd-ceil(b);
+%           end
+%           bandDist=sort(bandDist);
+%           obj.radiusIn=[bandDist(1),bandDist(2),bandDist(3),bandDist(4), bandDist(5)];
+%           obj.radiusOut=[bandDist(2),bandDist(3),bandDist(4), bandDist(5),maxrd];
+            
+%           obj.radiusIn=[0,(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2)];
+%           obj.radiusOut=[(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2), maxrd];
+            obj.radiusIn=[0,1,10,30, 80];
+            obj.radiusOut=[1,10,30, 80,maxrd];
+
             % Ring Filters
             [xmat, ymat]= meshgrid(1:obj.maskSizeX, 1:obj.maskSizeY);
-            center= [ceil(obj.maskSizeX/2) ceil(obj.maskSizeY/2)];
+            center= [ceil(obj.maskSizeX/2)+1 ceil(obj.maskSizeY/2)+1];
             dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
             
             for i=1:length(obj.radiusIn)
