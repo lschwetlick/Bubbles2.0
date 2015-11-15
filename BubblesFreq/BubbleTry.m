@@ -2,8 +2,9 @@
 
 clear
 clc
-p=imread('cat.jpg');
-r=rgb2gray(p);
-s=bubbles(r)
+dirName = {'./Stimuli/imgs/jpg'};
+data=LoadImgData(dirName);
+r=rgb2gray(data(2).image);
+s=bubbles(r);
 i=s.stimulus();
 imshow(i)

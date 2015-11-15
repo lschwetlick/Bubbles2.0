@@ -1,10 +1,11 @@
 clear
 clc
-p=imread('cat.jpg');
+dirName = {'./Stimuli/imgs/jpg'};
+data=LoadImgData(dirName);
 % r= p(:,:,1);
 % g= p(:,:,2);
 % b= p(:,:,3);
-r=rgb2gray(p);
+r=rgb2gray(data(2).image);
 
 r_fft=fft2(r);
 
@@ -16,14 +17,15 @@ r_fft=fftshift(r_fft);
 %Vorsicht mit ungradzahligen pixelanzahlen
 maxrd= ceil(sqrt(((x/2)^2)+((y/2)^2)));
 %% Power Function
-% 
-% nBands= 5;
-% pow=12;
-% bandDist=[];
-% for i=1:nBands
-%     b= nthroot(((i)/(5/maxrd^pow)),pow);
-%     bandDist(i)=ceil(b);
-% end
+
+nBands= 5;
+pow=30;
+bandDist=[];
+for i=1:nBands
+    b= nthroot(((i)/(5/maxrd^pow)),pow);
+    bandDist(i)=maxrd-ceil(b);
+end
+bandDist=sort(bandDist);
 %% log
 % nBands= 5;
 % base= 1.05;
@@ -52,12 +54,15 @@ maxrd= ceil(sqrt(((x/2)^2)+((y/2)^2)));
 %% Programm
 %ringfilter
 [xmat, ymat]= meshgrid(1:x, 1:y);
-% asdf=ceil(50)
-% radiusIn=[0,bandDist(1),bandDist(2),bandDist(3),bandDist(4)];
-% radiusOut=[bandDist(1),bandDist(2),bandDist(3),bandDist(4), bandDist(5)];
-radiusIn=[0,(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2)];
-radiusOut=[(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2), maxrd];
-center= [151 151];
+
+% radiusIn=[0,bandDist(2),bandDist(3),bandDist(4), bandDist(5)];
+% radiusOut=[bandDist(2),bandDist(3),bandDist(4), bandDist(5),maxrd];
+radiusIn=[0,1,10,30, 80];
+radiusOut=[1,10,30, 80,maxrd];
+
+% radiusIn=[0,(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2)];
+% radiusOut=[(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2), maxrd];
+center= [ceil(x/2)+1 ceil(y/2)+1 ];
 dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
 dist(151,151)=1;
 ringList={};

@@ -1,0 +1,16 @@
+function [ optBoxStats ] = OptBoxMaker( nBoxes, windowHeight, windowWidth )
+%UNTITLED Summary of this function goes here
+%   Detailed explanation goes here
+optHeight=floor(windowHeight/nBoxes);
+optBoxStats=[];
+    for i= [1:nBoxes]
+        optBoxStats(1,i)=windowWidth-200;
+        optBoxStats(2,i)=optHeight*(i-1);
+        optBoxStats(3,i)=windowWidth;
+        optBoxStats(4,i)ottom=optHeight*i;
+    end
+    
+    
+    
+end
+
