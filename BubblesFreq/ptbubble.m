@@ -14,16 +14,17 @@ infoFileName = strcat('Data/Bubbles_Subject',subject,'_Details.csv');
 postFileName = strcat('Data/Bubbles_Subject',subject,'_Post.csv');
 
 %% Preparing the files
-%write out location data
-bubbleFileHandle = fopen(bubbleFileName, 'w');
-fprintf(bubbleFileHandle, ',x,y\n');
-%write out performance datasca
-
-infoFileHandle = fopen(infoFileName, 'w');
-fprintf(infoFileHandle, 'VPNr, Trial, Image, Amount, Target, Response, Correct, Time\n');
-%write postTest performance
-postFileHandle = fopen(postFileName, 'w');
-fprintf(postFileHandle, 'percent correct at the end\n');
+% %write out location data
+% bubbleFileHandle = fopen(bubbleFileName, 'w');
+% fprintf(bubbleFileHandle, ',x,y\n');
+% %write out performance datasca
+% 
+% infoFileHandle = fopen(infoFileName, 'w');
+% fprintf(infoFileHandle, 'VPNr, Trial, Image, Amount, Target, Response, Correct, Time\n');
+% %write postTest performance
+% postFileHandle = fopen(postFileName, 'w');
+% fprintf(postFileHandle, 'percent correct at the end\n');
+Result={};
 
 %% Loading in the Stimulus-Images
 dirName = {'./Stimuli/imgs/jpg'};
@@ -81,6 +82,7 @@ end
 %% Stimulus presentation
 feedbackCounter=0;
 for trial=1:(nTrials)
+    
     %every 50th trial there is a Break with feedback
     RestrictKeysForKbCheck([ ]);
     if mod(trial,50)==0
@@ -90,11 +92,10 @@ for trial=1:(nTrials)
         KbWait();
         feedbackCounter=0;
     end
-    
+    %Random Image
     imno = randi([1, numel(data)]);
     disp('Targetnr')
     disp(data(imno).id)
-    
     %present FixCross
     big=50;
     line=5;
@@ -102,15 +103,23 @@ for trial=1:(nTrials)
     %to allow things to load during the presentation of the cross
     fixT=GetSecs();
 %     WaitSecs(1);
-    
-    smallImage=data(imno).image;
-    
+%     %make it wait longer if the calculation was quick
+%     fixT2 = GetSecs();
+%     if fixT2-fixT<1
+%         WaitSecs((1-(fixT2-fixT)));
+% %         disp('i had to wait')
+% %         disp(1-(fixT2-fixT))
+%     end
+
+%     secs=t1-t0;
+
+
+%Make Stimulus
+    smallImage=data(imno).image; 
     stim=bubbles(rgb2gray(smallImage));
     theImage=stim.stimulus();
-%     disp(amountList(amno))
-%     disp(data(imno).type)
-    
-    %write location data
+   
+%write location data
 %      fprintf(bubbleFileHandle, 'Trial %d\n', trial);
 %      for b = 1:numel(stim.xLocations)
 %          x=stim.xLocations(b);
@@ -118,9 +127,9 @@ for trial=1:(nTrials)
 %          fprintf(bubbleFileHandle, ',%d,%d\n',x, y);
 %      end
         
-    %this prepares the image for PTB presentation
+%this prepares the image for PTB presentation
     imageTexture = Screen('MakeTexture', window, theImage);
-    
+%make Boxes    
     boxStats=OptBoxMaker(nImages, windowHeight, windowWidth);
 %make colors
     for i =[1:nImages]
@@ -130,16 +139,16 @@ for trial=1:(nTrials)
             cols(1:3,i)=200;
         end
     end
-
+% Text Styling
     Screen('TextFont', window, 'Arial');
-    Screen('TextSize', window, 30);
+    Screen('TextSize', window, 25);
     Screen('TextStyle', window, [0]);
     textCol=[0 0 0];
-    x=1;
+% Set mouse
+    mouseX=1;
     SetMouse(0, 0, window);
-    while x < windowWidth-200
-        disp('FUUU')
-        
+%When you click somewhere in the stimulus, it ignores it
+    while mouseX < windowWidth-200     
         for i=[1:nImages]
             Screen('FillRect', window, cols ,boxStats)
         end
@@ -148,13 +157,20 @@ for trial=1:(nTrials)
         end
         Screen('DrawTexture', window, imageTexture, [], [], 0);
         Screen('Flip', window);
-        [clicks,x,y,whichButton] = GetClicks(window);
+        if mouseX==1
+            t1=GetSecs();        
+        end
+        [clicks,mouseX,mouseY,whichButton] = GetClicks(window);
 
     end
+%measuring reaction time
+    t2=GetSecs();
+    rt=t2-t1;
+    disp(rt)
 
 %outputs the answer given
     for i=[1:nImages]
-        if y<boxStats(4,i)
+        if mouseY<boxStats(4,i)
             ans=i;
             disp('ans')
             disp(i)
@@ -168,21 +184,20 @@ for trial=1:(nTrials)
     end
     disp('correct')
     disp(correct)
+%result Matlab Struct
+    Result(trial).Subject=subject;
+    Result(trial).Trial=trial;
+    Result(trial).image=data(imno).name;
+    Result(trial).bubble=stim;
+    Result(trial).ID= data(imno).id;
+    Result(trial).answer=ans;
+    Result(trial).correct=correct;
+    Result(trial).time=rt;
     
-%     %make it wait longer if the calculation was quick
-%     fixT2 = GetSecs();
-%     if fixT2-fixT<1
-%         WaitSecs((1-(fixT2-fixT)));
-% %         disp('i had to wait')
-% %         disp(1-(fixT2-fixT))
-%     end
-
-%     secs=t1-t0;
-%    
-% %     
-%      if correct==true
-%          feedbackCounter=feedbackCounter+1;
-%      end
+%counts correct answers for the feedback
+    if correct==true
+     feedbackCounter=feedbackCounter+1;
+    end
     %'Trial, Image, Amount, Target, Response, Correct, Time'
 %      fprintf(infoFileHandle, '%s,%d,%s,%f,%d,%s,%d,%f\n', subject, trial, data(imno).name, nBubbles, data(imno).type, KbName(keyCode), double(correct), secs);
      
@@ -191,9 +206,8 @@ for trial=1:(nTrials)
     %delete from list, so that it doesnt show up again
         data(imno)=[];
     end
-%     amountList(amno)=[];
-    Screen('Close', imageTexture)
-    
+
+    Screen('Close', imageTexture)    
 end
 %% Post Test
 % PosttestInstructions(window)
@@ -209,7 +223,7 @@ end
 % KbWait()
 
 %% Close Everything
-fclose(bubbleFileHandle);
-fclose(infoFileHandle);
-fclose(postFileHandle);
+% fclose(bubbleFileHandle);
+% fclose(infoFileHandle);
+% fclose(postFileHandle);
 Screen('Close', window); % Grafikfenster wieder schließen
