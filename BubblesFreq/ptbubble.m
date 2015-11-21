@@ -27,7 +27,7 @@ postFileName = strcat('Data/Bubbles_Subject',subject,'_Post.csv');
 Result={};
 
 %% Loading in the Stimulus-Images
-dirName = {'./Stimuli/imgs/jpg'};
+dirName = {'./Stimuli/imgs/small'};
 data=LoadImgData(dirName);
 dataCopy=data;
 
@@ -47,7 +47,8 @@ Screen('Preference', 'SkipSyncTests', 1);
 if length(Screen('screens'))==1
     monitor= 0;
     % size of the smaller window. First two numbers represent the position on the screen, the second two the size
-    rect = [30 30 500 500];   
+    %rect = [30 30 500 500];
+    rect=[];
     %handle of my Graphic window
     window = Screen('OpenWindow', monitor,settings.background, rect);
 else
@@ -67,10 +68,9 @@ end
 
 [windowWidth, windowHeight]=Screen('WindowSize', window);
 %% First Image viewing
-% FirstInstructions(window)
-% WaitSecs(1);
-% RestrictKeysForKbCheck([]);
-% KbWait();
+FirstInstructions(window)
+WaitSecs(1);
+GetClicks()
 % TargetsAgain(window, pretestData)
 %% Pretest
 %Pretest(window, pretestData, settings)

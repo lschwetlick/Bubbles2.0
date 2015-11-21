@@ -9,7 +9,7 @@ classdef bubbles
         maskList={}
         sd=[200,100,50,25]
         amount=[] %amount of bubbles to be plotted
-        maskLocations={}
+        bandMask={}
         nBands=5
         ringList={}
         radiusIn=[]
@@ -17,7 +17,6 @@ classdef bubbles
         meanBand=[]
         maskedBands={}
         stimulus=[]
-        filtIm={}
     end
 
     methods
@@ -76,8 +75,8 @@ classdef bubbles
                     yLocations(i)=randi(obj.maskSizeY);
                 end
 
-                obj.maskLocations{1,j}=xLocations;
-                obj.maskLocations{2,j}=yLocations;
+                obj.bandMask{1,j}=xLocations;
+                obj.bandMask{2,j}=yLocations;
             end
             
             
@@ -109,11 +108,11 @@ classdef bubbles
                 %make mask with parameters set above
                 mask = zeros(obj.maskSizeY,obj.maskSizeX);
                 for i = 1:obj.amount(j)
-%                     mu=[obj.maskLocations{1,j}(i), obj.maskLocations{2,j}(i)];
+%                     mu=[obj.bandMask{1,j}(i), obj.bandMask{2,j}(i)];
 %                     F = (1./sqrt(2.*pi.*obj.sd)).*exp( -((((X1-mu(1)).^2)+((X2-mu(2)).^2)) ./ (obj.sd.^2)));
 %                     F=F./max(max(F));
 %                     mask=mask+F;
-                    mu=[obj.maskLocations{1,j}(i), obj.maskLocations{2,j}(i)];
+                    mu=[obj.bandMask{1,j}(i), obj.bandMask{2,j}(i)];
                     F = (1./sqrt(2.*pi.*obj.sd(j))).*exp( -((((X1-mu(1)).^2)+((X2-mu(2)).^2)) ./ (obj.sd(j).^2)));
                     F=F./max(max(F));
                     mask=mask+F;
@@ -160,11 +159,11 @@ classdef bubbles
             for i=[1:obj.nBands]
                 bandFft=picFft.*obj.ringList{i};%frequency filter image
                 band=ifft2(ifftshift(bandFft));%shift back to time
-                obj.filtIm{i}=double(real(band))./255; %cut imaginary
+                filtIm=double(real(band))./255; %cut imaginary
                 if i==1
-                    obj.maskedBands{i}=obj.filtIm{i};
+                    obj.maskedBands{i}=filtIm;
                 else
-                    obj.maskedBands{i}=obj.filtIm{i}.* obj.maskList{i-1};%filter through bubbles
+                    obj.maskedBands{i}=filtIm.* obj.maskList{i-1};%filter through bubbles
                 end
             end
 %             band1fft=picFft.*obj.ringList{1};

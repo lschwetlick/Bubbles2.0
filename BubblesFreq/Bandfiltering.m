@@ -1,11 +1,11 @@
 clear
 clc
-dirName = {'./Stimuli/imgs/jpg'};
+dirName = {'./Stimuli/imgs/small'};
 data=LoadImgData(dirName);
 % r= p(:,:,1);
 % g= p(:,:,2);
 % b= p(:,:,3);
-r=rgb2gray(data(2).image);
+r=rgb2gray(data(4).image);
 
 r_fft=fft2(r);
 
@@ -57,14 +57,19 @@ bandDist=sort(bandDist);
 
 % radiusIn=[0,bandDist(2),bandDist(3),bandDist(4), bandDist(5)];
 % radiusOut=[bandDist(2),bandDist(3),bandDist(4), bandDist(5),maxrd];
-radiusIn=[0,1,10,30, 80];
-radiusOut=[1,10,30, 80,maxrd];
+% radiusIn=[0,3,11,31, 81];
+% radiusOut=[1,10,30, 80,maxrd];
 
-% radiusIn=[0,(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2)];
-% radiusOut=[(maxrd/16),(maxrd/8),(maxrd/4),(maxrd/2), maxrd];
+radiusIn=[0,3,(maxrd/8)+1,(maxrd/4)+1,(maxrd/2)+1];
+radiusOut=[2,(maxrd/8),(maxrd/4),(maxrd/2), maxrd];
+
+radiusIn=[0,3,5,9,17];
+radiusOut=[2,4,8,16, maxrd];
+
+
 center= [ceil(x/2)+1 ceil(y/2)+1 ];
 dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
-dist(151,151)=1;
+%dist(151,151)=1;
 ringList={};
 for i=1:length(radiusIn)
     circIn=dist<=radiusIn(i);
@@ -74,7 +79,7 @@ for i=1:length(radiusIn)
     ring=ring==0;
     ringList{i}=ring;
 end
-ringList{1}(151,151)=1;
+ringList{1}(center(2),center(1))=1;
 ringAdd=ringList{1}+ringList{2}+ringList{3}+ringList{4}+ringList{5};
 
 
