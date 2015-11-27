@@ -63,18 +63,19 @@ bandDist=sort(bandDist);
 radiusIn=[0,3,(maxrd/8)+1,(maxrd/4)+1,(maxrd/2)+1];
 radiusOut=[2,(maxrd/8),(maxrd/4),(maxrd/2), maxrd];
 
-radiusIn=[0,3,5,9,17];
+radiusIn=[0,2,4,8,16];
 radiusOut=[2,4,8,16, maxrd];
+radius=[0,2,4,8,16,maxrd];
 
 
 center= [ceil(x/2)+1 ceil(y/2)+1 ];
 dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
 %dist(151,151)=1;
 ringList={};
-for i=1:length(radiusIn)
-    circIn=dist<=radiusIn(i);
-    circOut=dist<=radiusOut(i);
-    circOut=circOut==0;
+for i=1:length(radius)-1
+    circIn=dist<radius(i);
+    circOut=dist>=radius(i+1);
+    %circOut=circOut==0;
     ring=circIn+circOut;
     ring=ring==0;
     ringList{i}=ring;
@@ -150,14 +151,14 @@ r_new5norm=r_new5/max(max(r_new5)).*255;
 
 
 %show
-figure(1);
-
-subplot(1,6,1), imshow(uint8(real(r_new1norm))), title('Band1')
-subplot(1,6,2), imshow(uint8(real(r_new2norm))), title('Band2')
-subplot(1,6,3), imshow(uint8(real(r_new3norm))), title('Band3')
-subplot(1,6,4), imshow(uint8(real(r_new4norm))), title('Band4')
-subplot(1,6,5), imshow(uint8(real(r_new5norm))), title('Band5')
-subplot(1,6,6), imshow(r), title('Original')
+% figure(1);
+% 
+% subplot(1,6,1), imshow(uint8(real(r_new1norm))), title('Band1')
+% subplot(1,6,2), imshow(uint8(real(r_new2norm))), title('Band2')
+% subplot(1,6,3), imshow(uint8(real(r_new3norm))), title('Band3')
+% subplot(1,6,4), imshow(uint8(real(r_new4norm))), title('Band4')
+% subplot(1,6,5), imshow(uint8(real(r_new5norm))), title('Band5')
+% subplot(1,6,6), imshow(r), title('Original')
 % 
 % figure(2)
 % imshow(uint8(real(BlaZeitnorm)))

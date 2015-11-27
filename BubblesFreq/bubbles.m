@@ -14,68 +14,79 @@ classdef bubbles
         ringList={}
         radiusIn=[]
         radiusOut=[]
+        radius=[]
         meanBand=[]
         maskedBands={}
         stimulus=[]
         filtIm={}
+        nBubbles=[]
+        minOctave=[]
     end
 
     methods
 
-        function obj=bubbles(pic, nBands)
+        function obj=bubbles(pic, nBands, nBubbles, minOctave)
             %constructor
             %obj.pic=rgb2gray(pic);
             obj.pic=pic;
             obj.nBands=nBands;
+            obj.nBubbles=nBubbles;
+            obj.minOctave=minOctave;
             [obj.maskSizeY,obj.maskSizeX,unused] = size(pic);
-            obj.amount=[1,3,10,20];
 %             obj.sd=sd;
             %Place the spots in random locations
             obj=obj.setBands();
+            obj=obj.setAmount();
             obj=obj.setlocations();
             obj=obj.filtermaker();
-            
             obj=obj.setBubble();
             obj=obj.maskmaker();
             obj=obj.stimulusMaker();
         end %constructor function
         
         function obj=setBubble(obj)
+            % finds bubble sd depending on the bands
             obj.meanBand=[];
             for i =[1:obj.nBands]
-                obj.meanBand(i)=mean([obj.radiusIn(i),obj.radiusOut(i)]);
+                obj.meanBand(i)=mean([obj.radius(i),obj.radius(i+1)]);
             end
-            for i=[1:numel(obj.meanBand)]
-                obj.sd(i)= ceil(obj.maskSizeX/obj.meanBand(i));
-            
+            meanBandMask=obj.meanBand(2:end);
+            for i=[1:numel(meanBandMask)]
+                obj.sd(i)= ceil(obj.maskSizeX/meanBandMask(i))*3;
             end
             
         end
         
         function obj=setBands(obj)
+            %sets the bandwidths
             maxrd= ceil(sqrt(((obj.maskSizeX/2)^2)+((obj.maskSizeY/2)^2)));            
-            min=2;
-            a=min.*(2.^[0:obj.nBands-2]); %because two values are already set: min and max
+            %min=2;
+            a=obj.minOctave.*(2.^[0:obj.nBands-2]); %because two values are already set: min and max and the zero also covers one
             b=a(a<maxrd);
-            b2=1+b;
-            obj.radiusIn=horzcat([0],b);
-            
-            obj.radiusOut=horzcat(b, maxrd);
-            
-            obj.amount=(2.^[0:obj.nBands-1]);
+%             b2=1+b;
+%             obj.radiusIn=horzcat([0],b);
+%             obj.radiusOut=horzcat(b, maxrd);
+            obj.radius=horzcat([0],b,[maxrd]);
+        end
+        
+        function [obj]=setAmount(obj)
+            techNBubbles=(4.^[0:obj.nBands-2]); %one less for zero and background
+            probNBubbles=techNBubbles/sum(techNBubbles);
+            cutOffNBubbles=cumsum(probNBubbles);
+            r1= rand(1,obj.nBubbles);
+            for i=[1:obj.nBands-1] %one of the bands will be background
+                obj.amount(i)=sum(r1<cutOffNBubbles(i))-sum(obj.amount);
+            end
         end
         
         function [obj]=setlocations(obj)
             for j=1:(obj.nBands-1)
-                
-                xLocations=zeros(1,sum(obj.amount));
-                yLocations=zeros(1,sum(obj.amount));
-
+                xLocations=zeros(1,obj.amount(j));
+                yLocations=zeros(1,obj.amount(j));
                 for i=1:numel(xLocations)
                     xLocations(i)=randi(obj.maskSizeX);
                     yLocations(i)=randi(obj.maskSizeY);
                 end
-
                 obj.maskLocations{1,j}=xLocations;
                 obj.maskLocations{2,j}=yLocations;
             end
@@ -87,32 +98,9 @@ classdef bubbles
             %Make Masks
             [X1,X2] = meshgrid(1:obj.maskSizeX,1:obj.maskSizeY);            
             for j=1:(obj.nBands-1)
-                %different parameters for the different bands
-%                 if j==1 %coarsest/lowest band with fewest and largest bubbles
-%                     %nBubbles=obj.amount[j];
-%                     m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
-%                     %obj.sd(j)=ceil((obj.maskSizeX/m)*3);
-%                     
-%                 elseif j==2
-%                     %amount =5;
-%                     m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
-%                     obj.sd(j)=ceil((obj.maskSizeX/m)*3);
-%                 elseif j==3
-%                     %amount =10;
-%                     m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
-%                     obj.sd(j)=ceil((obj.maskSizeX/m)*3);
-%                 else % finest band with most and smallest bubbles
-%                     %amount=20;
-%                     m=mean(obj.radiusIn(j)+1:obj.radiusOut(j));
-%                     obj.sd(j)=ceil((obj.maskSizeX/m)*3);
-%                 end
-                %make mask with parameters set above
+
                 mask = zeros(obj.maskSizeY,obj.maskSizeX);
                 for i = 1:obj.amount(j)
-%                     mu=[obj.maskLocations{1,j}(i), obj.maskLocations{2,j}(i)];
-%                     F = (1./sqrt(2.*pi.*obj.sd)).*exp( -((((X1-mu(1)).^2)+((X2-mu(2)).^2)) ./ (obj.sd.^2)));
-%                     F=F./max(max(F));
-%                     mask=mask+F;
                     mu=[obj.maskLocations{1,j}(i), obj.maskLocations{2,j}(i)];
                     F = (1./sqrt(2.*pi.*obj.sd(j))).*exp( -((((X1-mu(1)).^2)+((X2-mu(2)).^2)) ./ (obj.sd(j).^2)));
                     F=F./max(max(F));
@@ -126,22 +114,29 @@ classdef bubbles
 
         %
         function [obj] = filtermaker(obj)
-            
-
             % Ring Filters
             [xmat, ymat]= meshgrid(1:obj.maskSizeX, 1:obj.maskSizeY);
             center= [ceil(obj.maskSizeX/2)+1 ceil(obj.maskSizeY/2)+1];
             dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
             
-            for i=1:length(obj.radiusIn)
-                circIn=dist<=obj.radiusIn(i);
-                circOut=dist<=obj.radiusOut(i);
-                circOut=circOut==0;
+%             for i=1:length(obj.radiusIn)
+%                 circIn=dist<=obj.radiusIn(i);
+%                 circOut=dist<=obj.radiusOut(i);
+%                 circOut=circOut==0;
+%                 ring=circIn+circOut;
+%                 ring=ring==0;
+%                 obj.ringList{i}=ring;
+%             end
+            for i=1:length(obj.radius)-1
+                circIn=dist<obj.radius(i);
+                circOut=dist>=obj.radius(i+1);
+                %circOut=circOut==0;
                 ring=circIn+circOut;
                 ring=ring==0;
                 obj.ringList{i}=ring;
             end
-            obj.ringList{1}(center(2), center(1))=1;
+
+            %obj.ringList{1}(center(2), center(1))=1;
         end
         
         function [obj] = stimulusMaker(obj)
