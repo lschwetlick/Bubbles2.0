@@ -15,9 +15,8 @@ Screen('TextStyle', window, [0]);
 % plot the writing
 Screen('DrawText', window, 'Im letzten Teil des Experiments möchten wir Sie bitten', textX, textY, [0 0 0]);
 Screen('DrawText', window, 'nocheinmal die unverdeckten Bilder zu Identifizieren.', textX, textY+textSpace);
-Screen('DrawText', window, 'Y - bekanntes Bild', textX, textY+4*textSpace);
-Screen('DrawText', window, 'N - unbekanntes Bild ', textX, textY+5*textSpace);
-Screen('DrawText', window, 'Drücken Sie eine beliebige Taste um fortzufahren', textX, textY+8*textSpace);
+Screen('DrawText', window, 'Klicken Sie dazu einfach auf den richtigen Namen zu jedem Bild', textX, textY+3*textSpace);
+Screen('DrawText', window, 'Drücken Sie die Maustaste um fortzufahren.', textX, textY+5*textSpace);
 % present
 Screen('Flip', window);
 

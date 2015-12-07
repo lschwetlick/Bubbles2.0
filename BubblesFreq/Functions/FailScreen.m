@@ -1,7 +1,7 @@
 function [  ] = FailScreen( window, bg )
 %UNTITLED3 Summary of this function goes here
 %   Detailed explanation goes here
-[y,Fs] = wavread('Stimuli/Wrong.wav');
+[y,Fs] = audioread('Stimuli/Wrong.wav');
 sound(y,Fs);
 [windowWidth, windowHeight]=Screen('WindowSize', window);
 % text Position 

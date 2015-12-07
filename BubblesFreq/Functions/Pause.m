@@ -15,7 +15,7 @@ Screen('TextStyle', window, [0]);
 % plot the writing
 Screen('DrawText', window, ['In diesem Block haben Sie ', correctstr,' aus 50 richtig erkannt.'], textX, textY, [0 0 0]);
 Screen('DrawText', window, 'Sie können jetzt eine Pause machen', textX, textY+2*textSpace);
-Screen('DrawText', window, 'Weiter mit einer beliebigen Taste.', textX, textY+5*textSpace);
+Screen('DrawText', window, 'Weiter mit der Maustaste.', textX, textY+5*textSpace);
 
 Screen('Flip', window);
 

@@ -23,11 +23,12 @@ classdef textdisplays
             obj.textSpace=obj.textSize+(obj.windowHeight*0.03);
         end %constructor function
             
-        function FirstInstructions(obj)
+        function obj=FirstInstr(obj)
             disp('lala')
             Screen('TextFont', obj.window, 'Arial');
             Screen('TextSize', obj.window, obj.textSize);
             Screen('TextStyle', obj.window, [0]);
+            disp('hello')
             % plot the writing
             Screen('DrawText', obj.window, 'Willkommen bei unserem Experiment!', obj.textX, obj.textY, [0 0 0]);
             Screen('DrawText', obj.window, 'Zuerst werden Ihnen einige Bilder gezeigt, die Sie sich möglichst ', obj.textX, obj.textY+2*obj.textSpace);
@@ -35,7 +36,7 @@ classdef textdisplays
             Screen('DrawText', obj.window, 'Drücken Sie die Maustaste um fortzufahren', obj.textX, obj.textY+5*obj.textSpace);
             % present
             Screen('Flip', obj.window);
-            KbWait()
+            %KbWait()
         end
     end
     

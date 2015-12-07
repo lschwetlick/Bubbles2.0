@@ -2,6 +2,9 @@ function [ ] = TargetsAgain( window, data)
 %Shows the Target images and then asks whether to coninue
 %   Detailed explanation goes here
 [windowWidth, windowHeight]=Screen('WindowSize', window);
+textSize=round(windowHeight*0.05);
+Screen('TextSize', window, textSize);
+Screen('TextFont', window, 'Arial');
 
 for im=1:numel(data)
     
@@ -13,7 +16,7 @@ for im=1:numel(data)
 
         %instance of class
 %         theImage=imresize(data(im).image,f-0.01);
-        theImage=data(im).image;
+        theImage=rgb2gray(data(im).image);
 
         %this prepares the image for PTB presentation
         
@@ -21,21 +24,21 @@ for im=1:numel(data)
         imageTexture = Screen('MakeTexture', window, theImage);
         Screen('DrawTexture', window, imageTexture, [], [], 0);
         Screen('FillRect', window, [100 100 100] ,[0 windowHeight-100 windowWidth windowHeight])
-        
+        Screen(Screen('DrawText', window, data(im).name, windowWidth/2-50, windowHeight-80,[0 0 0]));
         
         %this presents the prepared bit in the window
 
         Screen('Flip', window);
-        WaitSecs(0.1);
-        KbWait();
+        WaitSecs(0.5);
+        GetClicks();
    
 end
 
 GenericInstructions(window)
 WaitSecs(1);
-[unused, keyCode,unused1]=KbWait();
+[unused, unused2, unused1, button]=GetClicks()
 
-if KbName(keyCode)=='b'
+if button==3 %3 is the right mouse button
     TargetsAgain(window, data)
 % else
 %     Pretest(window, data, settings)

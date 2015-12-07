@@ -16,8 +16,8 @@ Screen('TextStyle', window, [0]);
 % plot the writing
 Screen('DrawText', window, [rightstr,' von ',totalstr,' Bildern wurden richtig erkannt.'], textX, textY, [0 0 0]);
 Screen('DrawText', window, 'Um weiterzumachen sollten alle Bilder erkannt werden.', textX, textY+2*textSpace);
-Screen('DrawText', window, 'Drücken Sie "B" um die Bilder nochmal zu sehen.', textX, textY+3*textSpace);
-Screen('DrawText', window, 'Drücken Sie eine beliebige Taste um den Test nochmal zu', textX, textY+5*textSpace);
+Screen('DrawText', window, 'Drücken Sie die linke Maustaste um die Bilder nochmal zu sehen.', textX, textY+3*textSpace);
+Screen('DrawText', window, 'Drücken Sie die rechte Maustaste um den Test nochmal zu', textX, textY+5*textSpace);
 Screen('DrawText', window, 'machen.', textX, textY+6*textSpace);
 
 

@@ -37,8 +37,9 @@ load('Settings/BubbleSettings.mat');
 % - sd
 % - shadeOfGrey
 % - background
+nBubbles=20;
 nImages= numel(data);
-nEach=1;
+nEach=2;
 nTrials=nImages*nEach;
 
 %% setting up presentation
@@ -71,16 +72,17 @@ end
 FirstInstructions(window)
 WaitSecs(1);
 GetClicks()
-% TargetsAgain(window, pretestData)
+TargetsAgain(window, data)
 %% Pretest
-%Pretest(window, pretestData, settings)
+Pretest(window, data, settings)
 %% Presentation of main instructions
 % RestrictKeysForKbCheck([]);
-% InstructionsMain(window)
-% WaitSecs(1);
-% KbWait();
+InstructionsMain(window)
+WaitSecs(1);
+KbWait();
 %% Stimulus presentation
 feedbackCounter=0;
+adaptivityCounter=0;
 for trial=1:(nTrials)
     
     %every 50th trial there is a Break with feedback
@@ -96,6 +98,8 @@ for trial=1:(nTrials)
     imno = randi([1, numel(data)]);
     disp('Targetnr')
     disp(data(imno).id)
+    disp('How many?')
+    disp(nBubbles)
     %present FixCross
     big=50;
     line=5;
@@ -116,8 +120,8 @@ for trial=1:(nTrials)
 
 %Make Stimulus
     smallImage=data(imno).image; 
-    stim=bubbles(rgb2gray(smallImage));
-    theImage=stim.stimulus();
+    stim=bubbles(rgb2gray(smallImage),6,nBubbles,2);
+    theImage=stim.stimulus;
    
 %write location data
 %      fprintf(bubbleFileHandle, 'Trial %d\n', trial);
@@ -146,7 +150,7 @@ for trial=1:(nTrials)
     textCol=[0 0 0];
 % Set mouse
     mouseX=1;
-    SetMouse(0, 0, window);
+    SetMouse(windowWidth/2, windowHeight/2, window);
 %When you click somewhere in the stimulus, it ignores it
     while mouseX < windowWidth-200     
         for i=[1:nImages]
@@ -196,7 +200,16 @@ for trial=1:(nTrials)
     
 %counts correct answers for the feedback
     if correct==true
-     feedbackCounter=feedbackCounter+1;
+        feedbackCounter=feedbackCounter+1;
+        nBubbles=nBubbles-1
+        %adaptivityCounter=adaptivityCounter+1;
+        %if adaptivityCounter>=3
+        %    nBubbles=nBubbles-1;
+        %    adaptivityCounter=0;
+        %end
+    else
+        nBubbles=nBubbles+3;
+        adaptivityCounter=0;
     end
     %'Trial, Image, Amount, Target, Response, Correct, Time'
 %      fprintf(infoFileHandle, '%s,%d,%s,%f,%d,%s,%d,%f\n', subject, trial, data(imno).name, nBubbles, data(imno).type, KbName(keyCode), double(correct), secs);
