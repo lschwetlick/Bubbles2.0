@@ -1,0 +1,6 @@
+First Intructions 'Willkommen bei unserem Experiment! \nZuerst werden Ihnen einige Bilder gezeigt, die Sie sich möglichst genau einprägen sollten. \n\n Drücken Sie die Maustaste um fortzufahren.'
+Pretest Instructions 'Nun werden wir prüfen ob Sie sich die Bilder genau gemerkt haben. Wenn Sie die Bilder nocheinmal sehen wollen, drücken Sie die rechte Maustaste.\n\nSonst beginnt jetzt der Test:\nKlicken Sie einfach auf den richtigen Namen zu jedem Bild.\n\nDrücken Sie die Maustaste um fortzufahren.'
+Main Instructions 'Im nächsten Teil werden die Bilder, teilweise Verdeckt präsentiert. Bitte versuchen Sie die Bilder die Sie kennengelernt haben wiederzuerkennen. Nehmen Sie sich für jedes Bild soviel Zeit, wie Sie brauchen.\nKlicken Sie einfach auf den richtigen Namen zu jedem Bild.\n\nDrücken Sie die Maustaste um fortzufahren. '
+Posttest Instructions 'Im letzten Teil des Experiments möchten wir Sie bitten nocheinmal die unverdeckten Bilder zu Identifizieren.\nKlicken Sie dazu einfach auf den richtigen Namen zu jedem Bild.\n\nDrücken Sie die Maustaste um fortzufahren.'
+Thank you 'Vielen Dank für Ihre Teilnahme!'
+
