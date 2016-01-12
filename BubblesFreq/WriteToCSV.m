@@ -1,7 +1,7 @@
 function [  ] = WriteToCSV( struct, subject )
 %writes contents of results to CVS
 subject1=int2str(subject);
-infoFileName = strcat('Data/Bubbles__Subject',subject1,'_Details.csv');
+infoFileName = strcat('Data/Bubbles_Subject',subject1,'_Details.csv');
 infoFileHandle = fopen(infoFileName, 'w');
 fprintf(infoFileHandle, 'VPNr, Trial, Amount, Image, Response, Correct, Time\n');
 for i=[1:numel(struct)]
@@ -9,7 +9,7 @@ for i=[1:numel(struct)]
 end
 fclose(infoFileHandle);
 
-bubbleFileName = strcat('Data/Bubbles__Subject',subject1,'_Coordinates.csv');
+bubbleFileName = strcat('Data/Bubbles_Subject',subject1,'_Coordinates.csv');
 bubbleFileHandle = fopen(bubbleFileName, 'w');
 fprintf(bubbleFileHandle, 'VPNr, Trial, band, XLoc, YLoc\n');
 for trial=[1:numel(struct)]

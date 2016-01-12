@@ -8,7 +8,7 @@ pow=12;
 %bubble size
 sd=12;
 %Bild in den speicher Laden
-p=imread('cat.jpg');
+p=imread('./Stimuli/imgs/smallish/Abend.jpg');
 %Schwarz-Weiﬂ konvertieren
 r=rgb2gray(p);
 %r=p;

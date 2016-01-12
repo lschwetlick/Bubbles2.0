@@ -7,14 +7,13 @@ addpath('./Stimuli')
 
 clear
 clc
-dirName = {'./Stimuli/imgs/small'};
-data=LoadImgData(dirName);
-r=rgb2gray(data(3).image);
-s=bubbles(r,6,20,2)
-% s.sd=[0,0,0,0,0,0,0,0]
-% s.amount=[1,1,2,3,6,10,20,30]
-% s
-%i=s.stimulus()
+im=rgb2gray(imread('./Stimuli/imgs/smallish/Abend.jpg'));
+s=bubbles(im,7,30,2)
+s.sd=[0,0,0,0,0,0,0,0]
+s.amount=[1,1,2,3,6,10,20,30]
+s
+i=s.stimulus()
+%% Plot
 f1=figure(1);
 imshow(s.stimulus)
 
@@ -40,7 +39,7 @@ end
 %plotPos=[1 31 1920 973]; % home setup, big screen
 plotPos=[-1365 153 1366 661]; %homesetup, small screen
 % otherwise get with get(fighandle,'position')
-% set(f1,'position',plotPos)
-% set(f2,'position',plotPos)
-% set(f3,'position',plotPos)
-% set(f4,'position',plotPos)
+set(f1,'position',plotPos)
+set(f2,'position',plotPos)
+set(f3,'position',plotPos)
+set(f4,'position',plotPos)

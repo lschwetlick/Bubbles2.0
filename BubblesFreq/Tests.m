@@ -8,7 +8,6 @@ classdef Tests
         windowHeight=300;
         data={};
         display={};
-
     end
     
     methods
@@ -75,12 +74,11 @@ classdef Tests
             [unused, unused2, unused1, button]=GetClicks();
             
             if button==3 %3 is the right mouse button
-                obj.TargetsAgain()
+                obj.TargetsAgain();
 %             else  
 %                  Pretest(window, data, settings)
             end
-            
-            
+
         end
         
         
@@ -173,16 +171,17 @@ classdef Tests
             end
         end  %Funtion
         
-        function [obj, total]=PostTest(obj)
+        function [obj, total, imN]=PostTest(obj)
             t='Im letzten Teil des Experiments möchten wir Sie bitten nocheinmal die unverdeckten Bilder zu Identifizieren.\nKlicken Sie dazu einfach auf den richtigen Namen zu jedem Bild.\n\nDrücken Sie die Maustaste um fortzufahren.';
             obj.display.Instructions(t);
             data1=obj.data;
+            imN=numel(data1);
             total=0;
             for t=1:numel(data1)
                 imno= randi(numel(data1));
                 theImage=data1(imno).image;
                 %present FixCross
-                obj.display.FixCross()
+                obj.display.FixCross();
                 WaitSecs(1);
                 %Presents image and Menu, gives back time and correctness
                 [obj, correct, response, t1]=obj.ImageChoice(theImage, data1(imno).id);
@@ -191,60 +190,65 @@ classdef Tests
                 %deletes image from array, so it wont be shown again
                 data1(imno)=[];
             end
+            
         end
         
-        function [obj, results]=MainTest(obj,nEach,nBubbles)
-            t='Im nächsten Teil werden die Bilder, teilweise Verdeckt präsentiert. Bitte versuchen Sie die Bilder die Sie kennengelernt haben wiederzuerkennen. Nehmen Sie sich für jedes Bild soviel Zeit, wie Sie brauchen.\nKlicken Sie einfach auf den richtigen Namen zu jedem Bild.\n\nDrücken Sie die Maustaste um fortzufahren.';
-            obj.display.Instructions(t);
-            results={};
-            data1=obj.data;
-            feedbackCounter=0;
-            %need ntrials
-            nImages=numel(data1);
-            nTrials=nImages*nEach;
-            for trial=1:(nTrials)
-                %every 50th trial there is a Break with feedback
-                if mod(trial,50)==0
-                    obj.display.Pause(feedbackCounter)
+        function [obj, results]=MainTest(obj,nEach,nBubbles, pause)
+            try
+                t='Im nächsten Teil werden die Bilder, teilweise Verdeckt präsentiert. Bitte versuchen Sie die Bilder die Sie kennengelernt haben wiederzuerkennen. Nehmen Sie sich für jedes Bild soviel Zeit, wie Sie brauchen.\nKlicken Sie einfach auf den richtigen Namen zu jedem Bild.\n\nDrücken Sie die Maustaste um fortzufahren.';
+                obj.display.Instructions(t);
+                results={};
+                data1=obj.data;
+                feedbackCounter=0;
+                %need ntrials
+                nImages=numel(data1);
+                nTrials=nImages*nEach;
+                for trial=1:(nTrials)
+                    %every 50th trial there is a Break with feedback
+                    if mod(trial,pause)==0
+                        obj.display.Pause(feedbackCounter, pause);
+                        WaitSecs(1);
+                        GetClicks();
+                        feedbackCounter=0;
+                    end
+                    imno = randi([1, numel(data1)]);
+                    %fixcross
+                    obj.display.FixCross();
                     WaitSecs(1);
-                    getClicks();
-                    feedbackCounter=0;
-                end
-                imno = randi([1, numel(data1)]);
-                %fixcross
-                obj.display.FixCross()
-                WaitSecs(1);
-                %
-                im=data1(imno).image;
-                stim=bubbles(im,6,nBubbles,2);
-                %Write out some bubbles stats
-                results(trial).Trial=trial;
-                results(trial).Image=data1(imno).name;
-                results(trial).Amount=nBubbles;
-                results(trial).Locations=stim.maskLocations; %x direction is 1, y direction is 2
-                
-                %Image Presentation
-                theImage=stim.stimulus;
-                [obj, correct, response, t]=obj.ImageChoice(theImage, data1(imno).id);
-                disp(t)
-                %Adapt
-                if correct
-                    feedbackCounter=feedbackCounter+1;
-                    nBubbles=nBubbles-1;
-                else
-                    nBubbles=nBubbles+3;
-                end
-                data1(imno).seen = data1(imno).seen+1;
-                %delete from list, so that it doesnt show up again
-                if data1(imno).seen==nEach
-                    data1(imno)=[];
-                end
-                %results
-                results(trial).Correct=correct;
-                results(trial).RT=t;
-                results(trial).Response=obj.data(response).name;
-            end
-            
+                    %
+                    im=data1(imno).image;
+                    stim=bubbles(im,7,nBubbles,2);
+                    %Write out some bubbles stats
+                    results(trial).Trial=trial;
+                    results(trial).Image=data1(imno).name;
+                    results(trial).Amount=nBubbles;
+                    results(trial).Locations=stim.maskLocations; %x direction is 1, y direction is 2
+
+                    %Image Presentation
+                    theImage=stim.stimulus;
+                    [obj, correct, response, t]=obj.ImageChoice(theImage, data1(imno).id);
+                    
+                    %Adapt
+                    if correct
+                        feedbackCounter=feedbackCounter+1;
+                        nBubbles=nBubbles-1;
+                    else
+                        nBubbles=nBubbles+3;
+                    end
+                    data1(imno).seen = data1(imno).seen+1;
+                    %delete from list, so that it doesnt show up again
+                    if data1(imno).seen==nEach
+                        data1(imno)=[];
+                    end
+                    %results
+                    results(trial).Correct=correct;
+                    results(trial).RT=t;
+                    results(trial).Response=obj.data(response).name;
+                   
+                end   %(for)
+            catch
+                disp('Irgendetwas ist in der MainTest Funktion schief gegangen! Bitte wendet euch mit details an Lisa.')
+            end %try
         end
         
         

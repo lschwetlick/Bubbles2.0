@@ -15,7 +15,7 @@ for i=1:numel(dirName) %over all folders
         
         
         %transform to black and white
-        data(j).image = (imread(fpath)); % load file
+        data(j).image = rgb2gray(imread(fpath)); % load file
         data(j).name = fname(1:end-4); %file name
         data(j).path = fpath; %store file path
         data(j).seen = 0;

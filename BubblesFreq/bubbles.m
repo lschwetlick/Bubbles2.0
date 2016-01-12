@@ -98,9 +98,10 @@ classdef bubbles
             %Make Masks
             [X1,X2] = meshgrid(1:obj.maskSizeX,1:obj.maskSizeY);            
             for j=1:(obj.nBands-1)
-
+            % for each frequency band
                 mask = zeros(obj.maskSizeY,obj.maskSizeX);
                 for i = 1:obj.amount(j)
+                    %for each bubble in that band
                     mu=[obj.maskLocations{1,j}(i), obj.maskLocations{2,j}(i)];
                     F = (1./sqrt(2.*pi.*obj.sd(j))).*exp( -((((X1-mu(1)).^2)+((X2-mu(2)).^2)) ./ (obj.sd(j).^2)));
                     F=F./max(max(F));
@@ -118,15 +119,7 @@ classdef bubbles
             [xmat, ymat]= meshgrid(1:obj.maskSizeX, 1:obj.maskSizeY);
             center= [ceil(obj.maskSizeX/2)+1 ceil(obj.maskSizeY/2)+1];
             dist= sqrt((xmat-center(1)).^2+(ymat-center(2)).^2);
-            
-%             for i=1:length(obj.radiusIn)
-%                 circIn=dist<=obj.radiusIn(i);
-%                 circOut=dist<=obj.radiusOut(i);
-%                 circOut=circOut==0;
-%                 ring=circIn+circOut;
-%                 ring=ring==0;
-%                 obj.ringList{i}=ring;
-%             end
+
             for i=1:length(obj.radius)-1
                 circIn=dist<obj.radius(i);
                 circOut=dist>=obj.radius(i+1);

@@ -1,0 +1,11 @@
+VPNr, Trial, Amount, Image, Response, Correct, Time
+999,1,30,Fische,Berg,0,1.982544e+00
+999,2,33,Allee,Berg,0,1.896184e+00
+999,3,36,Vogel,Berg,0,1.350773e+00
+999,4,39,Blumen,Berg,0,1.702300e+00
+999,5,42,Bruecke,Bruecke,1,1.436011e+00
+999,6,41,Abend,Blumen,0,1.390113e+00
+999,7,44,Tor,Blumen,0,1.253261e+00
+999,8,47,Berg,Blumen,0,1.709465e+00
+999,9,50,Aegypten,Blumen,0,1.556858e+00
+999,10,53,Fenster,Bruecke,0,2.944127e+00

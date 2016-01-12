@@ -1,6 +1,6 @@
 clear
 clc
-dirName = {'./Stimuli/imgs/small'};
+dirName = {'./Stimuli/imgs/smallish/Abend.jpg'};
 data=LoadImgData(dirName);
 % r= p(:,:,1);
 % g= p(:,:,2);
